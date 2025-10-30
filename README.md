@@ -11,8 +11,11 @@ Overview
 --------
 PDF Skill Extractor & Job Recommender is a web application that extracts text and technical skills from uploaded PDF resumes and returns personalized job recommendations using natural language processing and machine learning techniques.
 
-Key features
-------------
+## Architecture
+
+![System Architecture](src/assets/architecture.png)
+
+## Key features
 - Client-side PDF text extraction (pdf.js)
 - Automatic detection of technical skills from resume content
 - Job recommendation engine that ranks results by skill relevance and weighting
