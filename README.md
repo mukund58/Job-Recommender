@@ -15,6 +15,37 @@ PDF Skill Extractor & Job Recommender is a web application that extracts text an
 
 ![System Architecture](src/assets/architecture.png)
 
+1. **Resume Upload (Frontend - React)**
+
+   * Users upload their resume in PDF or text format through the React interface.
+   * Libraries such as **`pdf.js`** or **`pdf-parse`** are used to extract text content from the uploaded file.
+
+2. **Keyword Extraction**
+
+   * The extracted text is processed on the frontend to identify relevant **skills** or **keywords**.
+   * This step can utilize predefined skill dictionaries or lightweight NLP logic for matching.
+
+3. **API Request to Backend**
+
+   * The React frontend sends a **POST** request to the **R Plumber API** endpoint `/recommend`, containing the extracted skills or keywords as JSON data.
+
+4. **Job Matching Logic (Backend - R Plumber API)**
+
+   * The backend, built using **`plumber`**, handles the recommendation logic:
+
+     * Loads the job dataset using **`readr`** or **`data.table`**.
+     * Counts exact and partial skill matches using **`stringr`** or **`dplyr`**.
+     * Optionally calculates **word frequency** or **match scores** for ranking.
+
+5. **Response Generation**
+
+   * The backend formats the matched results and returns a structured JSON response containing recommended jobs and associated match scores.
+
+6. **Display Recommendations (Frontend)**
+
+   * The frontend receives the response and dynamically displays job recommendations to the user, providing a ranked list and optionally a breakdown of matched skills.
+
+
 ## Key features
 - Client-side PDF text extraction (pdf.js)
 - Automatic detection of technical skills from resume content
