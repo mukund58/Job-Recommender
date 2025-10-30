@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve-api": "node server/server.js",
     "serve-r-api": "Rscript server/r_backend/run_api.R",
     "lint": "eslint .",
     "preview": "vite preview"
