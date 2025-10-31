@@ -184,9 +184,6 @@ Contributions are welcome. Please follow the standard workflow:
 3. Commit changes with clear messages.
 4. Push the branch and open a Pull Request for review.
 
-License
--------
-This project is licensed under the MIT License. See the LICENSE file for details.
 
 Acknowledgments
 ---------------
