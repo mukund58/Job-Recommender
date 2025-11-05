@@ -4,7 +4,7 @@ export default function Recommendations({ recLoading, recError, recommendations 
   const [expandedIndex, setExpandedIndex] = useState(null);
   const getValue = (val) => (Array.isArray(val) ? val[0] : val);
 
-  // Helper to convert text to Title Case
+  // Convert text to Title Case
   const toTitleCase = (str) =>
     str
       ? str
@@ -17,7 +17,7 @@ export default function Recommendations({ recLoading, recError, recommendations 
   if (recLoading)
     return (
       <p className="text-blue-600 animate-pulse text-center mt-6">
-        Fetching recommendations…
+        Fetching recommendations...
       </p>
     );
 
@@ -39,7 +39,7 @@ export default function Recommendations({ recLoading, recError, recommendations 
   return (
     <div className="mt-6 flex flex-col items-center">
       <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
-        🎯 Job Recommendations
+        Job Recommendations
       </h2>
 
       <div className="flex flex-col items-center w-full space-y-6">
@@ -52,14 +52,14 @@ export default function Recommendations({ recLoading, recError, recommendations 
               className="border border-gray-200 shadow-sm rounded-2xl p-5 bg-white hover:shadow-lg transition-all duration-200 w-full max-w-3xl"
             >
               {/* Job Title */}
-              <h3 className="text-xl font-semibold text-gray-800 mb-2 ">
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
                 {toTitleCase(getValue(job.title_clean))}
               </h3>
 
-              {/* Company + Location */}
-              <p className="text-sm text-gray-600 mb-3 ">
-                💼 {getValue(job.company_name)} <br /> 📍{" "}
-                {getValue(job.location) || "Anywhere"}
+              {/* Company and Location */}
+              <p className="text-sm text-gray-600 mb-3">
+                {getValue(job.company_name)} <br />
+                {getValue(job.location) || "Location not specified"}
               </p>
 
               {/* Tags */}
@@ -84,7 +84,7 @@ export default function Recommendations({ recLoading, recError, recommendations 
               {/* Match Score */}
               <div className="mb-3">
                 <p className="text-sm font-medium">
-                  🎯 Match Score:{" "}
+                  Match Score:{" "}
                   <span
                     className={`font-bold ${
                       score > 70
@@ -99,10 +99,10 @@ export default function Recommendations({ recLoading, recError, recommendations 
                 </p>
               </div>
 
-              {/* Skills */}
+              {/* Matched Skills */}
               {job.matched_skills && (
-                <p className="text-xs text-gray-700 mb-2 ">
-                  🧠 <strong>Matched Skills:</strong>{" "}
+                <p className="text-xs text-gray-700 mb-2">
+                  <strong>Matched Skills:</strong>{" "}
                   {Array.isArray(job.matched_skills)
                     ? job.matched_skills.join(", ")
                     : getValue(job.matched_skills)}
@@ -111,36 +111,37 @@ export default function Recommendations({ recLoading, recError, recommendations 
 
               {/* Salary */}
               {job.salary_range && (
-                <p className="text-xs text-gray-700 mb-2 ">
-                  💰 {getValue(job.salary_range)}
+                <p className="text-xs text-gray-700 mb-2">
+                  {getValue(job.salary_range)}
                 </p>
               )}
 
-                {job.description && (() => {
-                  const desc = getValue(job.description);
-                  const isExpanded = expandedIndex === i;
-                  const truncated = desc.length > 300 ? desc.slice(0, 300) + "..." : desc;
+              {/* Description */}
+              {job.description && (() => {
+                const desc = getValue(job.description);
+                const isExpanded = expandedIndex === i;
+                const truncated =
+                  desc.length > 300 ? desc.slice(0, 300) + "..." : desc;
 
-                  return (
-                    <div className="text-xs text-gray-700 mb-3">
-                      <p style={{ whiteSpace: 'pre-line' }}>
-                        <strong>Description:</strong> {isExpanded ? desc : truncated}
-                      </p>
-                      {desc.length > 300 && (
-                        <button
-                          onClick={() => setExpandedIndex(isExpanded ? null : i)}
-                          className="text-blue-500 mt-2 text-sm hover:underline"
-                        >
-                          {isExpanded ? "Show Less" : "Read More"}
-                        </button>
-                      )}
-                    </div>
-                  );
-                })()}
+                return (
+                  <div className="text-xs text-gray-700 mb-3">
+                    <p style={{ whiteSpace: "pre-line" }}>
+                      <strong>Description:</strong>{" "}
+                      {isExpanded ? desc : truncated}
+                    </p>
+                    {desc.length > 300 && (
+                      <button
+                        onClick={() => setExpandedIndex(isExpanded ? null : i)}
+                        className="text-blue-500 mt-2 text-sm hover:underline"
+                      >
+                        {isExpanded ? "Show Less" : "Read More"}
+                      </button>
+                    )}
+                  </div>
+                );
+              })()}
 
-
-
-              {/* View Details */}
+              {/* View Details Button */}
               <button className="mt-3 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg w-full transition-colors">
                 View Details
               </button>

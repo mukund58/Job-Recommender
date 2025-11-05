@@ -12,8 +12,9 @@ export default function ResumeUploader({ skillsList = [], onExtract, onError }) 
     onError && onError(null);
     const file = event.target.files && event.target.files[0];
     if (!file) return;
+
     if (file.type !== "application/pdf") {
-      onError && onError("Please upload a PDF file.");
+      onError && onError("Please upload a valid PDF file.");
       return;
     }
 
@@ -35,30 +36,30 @@ export default function ResumeUploader({ skillsList = [], onExtract, onError }) 
             fullText += pageText + "\n\n";
           }
 
-          const lowered = fullText.toLowerCase();
-          const found = (skillsList || []).filter((skill) =>
-            lowered.includes(skill.toLowerCase())
+          const loweredText = fullText.toLowerCase();
+          const matchedSkills = (skillsList || []).filter((skill) =>
+            loweredText.includes(skill.toLowerCase())
           );
 
-          onExtract && onExtract({ text: fullText, found });
-        } catch (e) {
-          console.error(e);
-          onError && onError("Failed to parse PDF.");
+          onExtract && onExtract({ text: fullText, found: matchedSkills });
+        } catch (error) {
+          console.error(error);
+          onError && onError("Failed to parse PDF content.");
         } finally {
           setLoading(false);
         }
       };
 
-      reader.onerror = (e) => {
-        console.error(e);
-        onError && onError("Failed to read file.");
+      reader.onerror = (error) => {
+        console.error(error);
+        onError && onError("Failed to read the uploaded file.");
         setLoading(false);
       };
 
       reader.readAsArrayBuffer(file);
-    } catch (e) {
-      console.error(e);
-      onError && onError("Unexpected error.");
+    } catch (error) {
+      console.error(error);
+      onError && onError("An unexpected error occurred while processing the file.");
       setLoading(false);
     }
   };
@@ -83,7 +84,7 @@ export default function ResumeUploader({ skillsList = [], onExtract, onError }) 
           />
         </svg>
         <p className="text-gray-700 font-medium text-center">
-          Click to upload or drag & drop your PDF resume
+          Click to upload or drag and drop your PDF resume
         </p>
         <p className="text-sm text-gray-500 mt-1">Only PDF files are supported</p>
       </label>
@@ -97,7 +98,7 @@ export default function ResumeUploader({ skillsList = [], onExtract, onError }) 
       />
 
       {fileName && !loading && (
-        <p className="mt-3 text-sm text-gray-600 italic">📄 {fileName}</p>
+        <p className="mt-3 text-sm text-gray-600 italic">{fileName}</p>
       )}
 
       {loading && (
@@ -122,7 +123,7 @@ export default function ResumeUploader({ skillsList = [], onExtract, onError }) 
               d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
             />
           </svg>
-          <p>Extracting text… please wait</p>
+          <p>Extracting text, please wait...</p>
         </div>
       )}
     </div>

@@ -71,7 +71,7 @@ export default function App() {
           Job Recommendation System
         </h1>
         <p className="text-center text-gray-600 mb-6">
-          Upload your resume to extract skills and get AI-powered job recommendations.
+          Upload your resume to extract skills and get job recommendations.
         </p>
 
         <ResumeUploader skillsList={skillsList} onExtract={handleExtract} onError={setError} />
