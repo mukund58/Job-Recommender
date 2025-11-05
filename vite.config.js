@@ -6,6 +6,9 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    allowedHosts: [
+      'project.mukund.xyz'
+    ],
     proxy: {
       // Proxy /recommend to the backend during development to avoid CORS issues.
       // Requests to /recommend will be forwarded to http://localhost:8000/recommend
