@@ -142,9 +142,9 @@ export default function Recommendations({ recLoading, recError, recommendations 
               })()}
 
               {/* View Details Button */}
-              <button className="mt-3 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg w-full transition-colors">
+              {/* <button className="mt-3 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg w-full transition-colors">
                 View Details
-              </button>
+              </button> */}
             </div>
           );
         })}

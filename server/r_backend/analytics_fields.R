@@ -1,14 +1,8 @@
-# --- STEP 2: BUSINESS INSIGHTS / ANALYTICS FEATURES ---
-
 library(stringr)
 library(jsonlite)
 
-# Load data from previous step
 jobs_5k <- read.csv("server/r_backend/data/enhanced_jobs_step1.csv", stringsAsFactors = FALSE)
 
-# --------------------------
-# 1️⃣ Extract salary range (₹ or $)
-# --------------------------
 extract_salary <- function(text) {
   pattern <- "(₹|\\$)\\s?\\d+[kK]?(–|-|to)?\\s?(₹|\\$)?\\s?\\d*[kK]?"
   match <- str_extract(text, pattern)
@@ -17,9 +11,6 @@ extract_salary <- function(text) {
 
 jobs_5k$salary_range <- sapply(jobs_5k$description, extract_salary)
 
-# --------------------------
-# 2️⃣ Normalize employment type
-# --------------------------
 normalize_employment_type <- function(text) {
   if (is.na(text)) return("Not specified")
   if (str_detect(text, regex("full[- ]?time", ignore_case = TRUE))) return("Full-time")
@@ -31,9 +22,6 @@ normalize_employment_type <- function(text) {
 
 jobs_5k$employment_type <- sapply(paste(jobs_5k$extensions, jobs_5k$description), normalize_employment_type)
 
-# --------------------------
-# 3️⃣ Convert "20 hours ago" → posted_days_ago
-# --------------------------
 convert_to_days <- function(time_str) {
   if (is.na(time_str) || nchar(time_str) == 0) return(NA)
   if (str_detect(time_str, "hour")) return(0)
@@ -54,9 +42,6 @@ convert_to_days <- function(time_str) {
 
 jobs_5k$posted_days_ago <- sapply(jobs_5k$posted_at, convert_to_days)
 
-# --------------------------
-# 4️⃣ Detect remote / hybrid / onsite
-# --------------------------
 detect_remote_type <- function(text) {
   if (str_detect(text, regex("remote|work from home|wfh", ignore_case = TRUE))) return("Remote")
   if (str_detect(text, regex("hybrid", ignore_case = TRUE))) return("Hybrid")
@@ -66,9 +51,6 @@ detect_remote_type <- function(text) {
 
 jobs_5k$remote_type <- sapply(paste(jobs_5k$title, jobs_5k$description), detect_remote_type)
 
-# --------------------------
-# 5️⃣ Normalize source platform (from 'via')
-# --------------------------
 normalize_platform <- function(via_text) {
   if (is.na(via_text)) return("Unknown")
   if (str_detect(via_text, regex("linkedin", ignore_case = TRUE))) return("LinkedIn")
@@ -80,8 +62,5 @@ normalize_platform <- function(via_text) {
 
 jobs_5k$source_platform <- sapply(jobs_5k$via, normalize_platform)
 
-# Save updated dataset
 write.csv(jobs_5k, "server/r_backend/data/enhanced_jobs_step2.csv", row.names = FALSE)
 write_json(jobs_5k, "server/r_backend/data/enhanced_jobs_step2.json", pretty = TRUE)
-
-message("✅ Step 2 complete: Added business analytics fields (salary_range, employment_type, posted_days_ago, remote_type, source_platform).")
