@@ -1,5 +1,5 @@
-## Helper runner script to start the plumber API on port 8000
-## Run this from project root with: Rscript server/r_backend/run_api.R
+
+## Rscript server/r_backend/run_api.R
 library(plumber)
 
 api_path <- file.path('server', 'r_backend', 'api.R')
