@@ -1,79 +1,90 @@
 # PDF Skill Extractor & Job Recommender
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/mukund58/Job-Recommender/ci.yml?branch=main&label=build&logo=github&color=blue)](https://github.com/mukund58/Job-Recommender/actions)
-[![Release](https://img.shields.io/github/v/release/mukund58/Job-Recommender?color=orange)](https://github.com/mukund58/Job-Recommender/releases)
 [![License](https://img.shields.io/github/license/mukund58/Job-Recommender)](LICENSE)
 [![Top Language](https://img.shields.io/github/languages/top/mukund58/Job-Recommender)](https://github.com/mukund58/Job-Recommender)
 [![Repository Size](https://img.shields.io/github/repo-size/mukund58/Job-Recommender)](https://github.com/mukund58/Job-Recommender)
 [![Last Commit](https://img.shields.io/github/last-commit/mukund58/Job-Recommender)](https://github.com/mukund58/Job-Recommender/commits)
 
-Overview
---------
-PDF Skill Extractor & Job Recommender is a web application that extracts text and technical skills from uploaded PDF resumes and returns personalized job recommendations using natural language processing and machine learning techniques.
+## Overview
+PDF Skill Extractor & Job Recommender is a web application that extracts text and technical skills from uploaded PDF resumes and returns personalized job recommendations using natural language processing and machine learning techniques. The app displays job recommendations with match scores, matched skills, and posting dates.
 
 ## Architecture
 
-![System Architecture](src/assets/architecture.png)
-
 1. **Resume Upload (Frontend - React)**
 
-   * Users upload their resume in PDF or text format through the React interface.
-   * Libraries such as **`pdf.js`** or **`pdf-parse`** are used to extract text content from the uploaded file.
+   * Users upload their resume in PDF format through the React interface.
+   * **`pdf.js`** is used to extract text content from the uploaded PDF.
 
-2. **Keyword Extraction**
+2. **Skill Extraction**
 
-   * The extracted text is processed on the frontend to identify relevant **skills** or **keywords**.
-   * This step can utilize predefined skill dictionaries or lightweight NLP logic for matching.
+   * The extracted text is matched against a predefined skills database to identify relevant technical skills.
 
 3. **API Request to Backend**
 
-   * The React frontend sends a **POST** request to the **R Plumber API** endpoint `/recommend`, containing the extracted skills or keywords as JSON data.
+   * The React frontend sends a **POST** request to the **R Plumber API** endpoint `/recommend`, containing the extracted skills as JSON data.
 
 4. **Job Matching Logic (Backend - R Plumber API)**
 
-   * The backend, built using **`plumber`**, handles the recommendation logic:
-
-     * Loads the job dataset using **`readr`** or **`data.table`**.
-     * Counts exact and partial skill matches using **`stringr`** or **`dplyr`**.
-     * Optionally calculates **word frequency** or **match scores** for ranking.
+   * The backend processes the skills and matches them against a job dataset.
+   * Calculates match scores based on skill relevance.
+   * Computes posted dates by parsing relative time strings and adjusting with scrape timestamps.
 
 5. **Response Generation**
 
-   * The backend formats the matched results and returns a structured JSON response containing recommended jobs and associated match scores.
+   * The backend returns a structured JSON response with recommended jobs, scores, matched skills, and calculated posted dates.
 
 6. **Display Recommendations (Frontend)**
 
-   * The frontend receives the response and dynamically displays job recommendations to the user, providing a ranked list and optionally a breakdown of matched skills.
+   * The frontend displays job recommendations with expandable descriptions, match scores, matched skills, and "time ago" posted dates.
 
-
-## Key features
-- Client-side PDF text extraction (pdf.js)
-- Automatic detection of technical skills from resume content
-- Job recommendation engine that ranks results by skill relevance and weighting
-- Responsive user interface implemented with React and Tailwind CSS
+## Key Features
+- Client-side PDF text extraction using pdf.js
+- Automatic detection of technical skills from resume content using a comprehensive skills database
+- Job recommendation engine that ranks results by skill match scores
+- Responsive user interface built with React and Tailwind CSS
 - R-based backend (Plumber) for data processing and recommendation logic
-- Detailed match results including scores, matched skills, and job metadata
+- Detailed match results including scores, matched skills, job metadata, and posting dates
+- Intelligent text formatting for job descriptions with expand/collapse functionality
 
-Technology stack
-----------------
-Frontend
-- React 19
+## Technology Stack
+### Frontend
+- React 19.1.1
 - Vite
 - Tailwind CSS
 - pdf.js
 
-Backend
+### Backend
 - R with Plumber
-- tidyverse, stringr, tm, jsonlite, purrr
+- dplyr, purrr, tibble, stringr, lubridate, jsonlite
 
-Prerequisites
--------------
-- Node.js v18 or later
+## Prerequisites
+- Node.js v18 or later (includes npm)
 - R v4.0 or later
-- Required R packages: plumber, jsonlite, readr, dplyr, stringr, tm, tidyverse, purrr
+- Required R packages: plumber, jsonlite, dplyr, purrr, tibble, stringr, lubridate
 
-Installation
-------------
+### Installing Dependencies
+#### On Ubuntu/Debian (apt):
+```bash
+sudo apt update
+sudo apt install nodejs npm r-base
+```
+
+#### On Arch Linux (pacman):
+```bash
+sudo pacman -Syu
+sudo pacman -S nodejs npm r
+```
+
+#### On macOS (Homebrew):
+```bash
+brew install node r
+```
+
+#### On Windows:
+- Download and install Node.js from [nodejs.org](https://nodejs.org/)
+- Download and install R from [cran.r-project.org](https://cran.r-project.org/)
+
+## Installation
 1. Clone the repository
    ```bash
    git clone https://github.com/mukund58/Job-Recommender.git
@@ -88,26 +99,15 @@ Installation
 3. Install R packages
    Open an R session and run:
    ```r
-   install.packages(c("plumber", "jsonlite", "readr", "dplyr", "stringr", "tm", "tidyverse", "purrr"))
+   install.packages(c("plumber", "jsonlite", "dplyr", "purrr", "tibble", "stringr", "lubridate"))
    ```
 
-Optional: regenerate job data
------------------------------
-To regenerate the processed job datasets, execute the preprocessing scripts in the following order from the project root:
-```bash
-Rscript server/r_backend/job_Recommendation.R
-Rscript server/r_backend/NLPSection.R
-Rscript server/r_backend/analytics_fields.R
-Rscript server/r_backend/search_optimization.R
-```
-
-Usage
------
+## Usage
 Start the R API server:
 ```bash
 npm run serve-r-api
 ```
-The Plumber API defaults to port 8000.
+The Plumber API runs on port 8000.
 
 Start the frontend development server:
 ```bash
@@ -115,20 +115,19 @@ npm run dev
 ```
 Open http://localhost:5173 in your browser.
 
-Typical workflow
+### Typical Workflow
 1. Upload a PDF resume through the user interface.
-2. The application extracts text and identifies skills.
+2. The application extracts text and identifies skills from the predefined database.
 3. Submit detected skills to obtain ranked job recommendations.
-4. Review detailed matches and scores.
+4. Review detailed matches, scores, and posting dates.
 
-API
----
-POST /recommend
-- Request body (JSON):
+## API
+### POST /recommend
+- **Request body (JSON):**
   ```json
   { "skills": ["python", "react", "sql"] }
   ```
-- Response (JSON): list of recommended jobs with scores and matched skills. Example:
+- **Response (JSON):** List of recommended jobs with scores, matched skills, and posted dates. Example:
   ```json
   {
     "results": [
@@ -136,6 +135,7 @@ POST /recommend
         "title_clean": "Data Scientist",
         "company_name": "Tech Corp",
         "location": "San Francisco, CA",
+        "posted_date": "2023-08-03 12:00:13",
         "score": 85,
         "matches": 3,
         "matched_skills": ["python", "sql", "machine learning"],
@@ -151,42 +151,36 @@ POST /recommend
   }
   ```
 
-Project structure
------------------
+## Project Structure
 ```
 Job-Recommender/
 ├── public/
-│   └── skills.json
 ├── src/
 │   ├── components/
 │   │   ├── ResumeUploader.jsx
 │   │   └── Recommendations.jsx
 │   ├── App.jsx
-│   └── skills.json
+│   ├── skills.json
+│   └── ...
 ├── server/
 │   └── r_backend/
 │       ├── data/
+│       │   └── enhanced_jobs_step3.json
 │       ├── api.R
-│       ├── job_Recommendation.R
-│       ├── NLPSection.R
-│       ├── analytics_fields.R
-│       └── search_optimization.R
+│       └── ...
 ├── package.json
 ├── vite.config.js
 └── README.md
 ```
 
-Contributing
-------------
+## Contributing
 Contributions are welcome. Please follow the standard workflow:
 1. Fork the repository.
-2. Create a feature branch: git checkout -b feature/your-feature.
+2. Create a feature branch: `git checkout -b feature/your-feature`.
 3. Commit changes with clear messages.
 4. Push the branch and open a Pull Request for review.
 
-
-Acknowledgments
----------------
+## Acknowledgments
 - pdf.js
 - The R community and CRAN packages
 - Tailwind CSS
