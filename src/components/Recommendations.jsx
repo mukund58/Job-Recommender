@@ -53,13 +53,13 @@ export default function Recommendations({ recLoading, recError, recommendations 
             >
               {/* Job Title */}
               <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                {toTitleCase(getValue(job.title_clean))}
+                <strong>Job Title:</strong> {toTitleCase(getValue(job.title_clean))}
               </h3>
 
               {/* Company and Location */}
               <p className="text-sm text-gray-600 mb-3">
-                {getValue(job.company_name)} <br />
-                {getValue(job.location) || "Location not specified"}
+                <strong>Company:</strong> {getValue(job.company_name)} <br />
+                <strong>Location:</strong> {getValue(job.location) || "Location not specified"}
               </p>
 
               {/* Tags */}
@@ -84,7 +84,7 @@ export default function Recommendations({ recLoading, recError, recommendations 
               {/* Match Score */}
               <div className="mb-3">
                 <p className="text-sm font-medium">
-                  Match Score:{" "}
+                  <strong>Match Score:</strong>{" "}
                   <span
                     className={`font-bold ${
                       score > 70
@@ -112,7 +112,7 @@ export default function Recommendations({ recLoading, recError, recommendations 
               {/* Salary */}
               {job.salary_range && (
                 <p className="text-xs text-gray-700 mb-2">
-                  {getValue(job.salary_range)}
+                  <strong>Salary Range:</strong> {getValue(job.salary_range)}
                 </p>
               )}
 
@@ -123,11 +123,65 @@ export default function Recommendations({ recLoading, recError, recommendations 
                 const truncated =
                   desc.length > 300 ? desc.slice(0, 300) + "..." : desc;
 
+                // Function to format description text
+                const formatDescription = (text) => {
+                  // If text already has line breaks, preserve them
+                  if (text.includes('\n')) {
+                    return text;
+                  }
+
+                  // For continuous text, add basic formatting
+                  let formatted = text;
+
+                  // Split on periods followed by spaces and capitalize next word
+                  formatted = formatted.replace(/\. ([A-Z])/g, '.\n\n$1');
+
+                  // Look for common section headers
+                  formatted = formatted.replace(/(responsibilities|requirements|qualifications|skills|experience|education|benefits|about us|job summary|what you'll do|what we offer)(:)/gi, '\n\n$1$2');
+
+                  // Look for "we are", "we need", "looking for" patterns
+                  formatted = formatted.replace(/(we are|we need|looking for|join us|about the role|in this role)(\s)/gi, '\n\n$1$2');
+
+                  // Look for bullet point indicators
+                  formatted = formatted.replace(/•/g, '\n•');
+
+                  // Look for numbered lists
+                  formatted = formatted.replace(/(\d+)\./g, '\n$1.');
+
+                  // Clean up excessive whitespace
+                  formatted = formatted.replace(/\n\s+/g, '\n');
+                  formatted = formatted.replace(/\n{3,}/g, '\n\n');
+
+                  // If still no line breaks after processing, add some basic paragraph breaks
+                  if (!formatted.includes('\n') && formatted.length > 200) {
+                    const words = formatted.split(' ');
+                    const result = [];
+                    let charCount = 0;
+
+                    for (const word of words) {
+                      result.push(word);
+                      charCount += word.length + 1;
+
+                      if (charCount > 80 && /[.,;:]$/.test(word)) {
+                        result.push('\n\n');
+                        charCount = 0;
+                      }
+                    }
+
+                    formatted = result.join(' ');
+                  }
+
+                  return formatted;
+                };
+
+                const formattedDesc = formatDescription(desc);
+                const formattedTruncated = formatDescription(truncated);
+
                 return (
                   <div className="text-xs text-gray-700 mb-3">
                     <p style={{ whiteSpace: "pre-line" }}>
                       <strong>Description:</strong>{" "}
-                      {isExpanded ? desc : truncated}
+                      {isExpanded ? formattedDesc : formattedTruncated}
                     </p>
                     {desc.length > 300 && (
                       <button
