@@ -1,3 +1,4 @@
+# load libraries
 library(plumber)
 library(jsonlite)
 library(readr)
@@ -5,6 +6,7 @@ library(stringr)
 library(dplyr)
 library(purrr)
 
+# cors filter for cross-origin requests
 #* @filter cors
 cors <- function(req, res) {
   res$setHeader('Access-Control-Allow-Origin', '*')
@@ -17,6 +19,7 @@ cors <- function(req, res) {
   plumber::forward()
 }
 
+# clean text by removing numbers, punctuation, extra spaces
 clean_text <- function(text) {
   if (is.na(text) || length(text) == 0) return("")
   txt <- tolower(text)
@@ -27,6 +30,7 @@ clean_text <- function(text) {
   txt
 }
 
+# load jobs data from json or csv
 load_jobs <- function() {
   candidates <- c('data/enhanced_jobs_step3.json', 'data/cleaned_jobs_5k.json')
   for (c in candidates) {
@@ -60,6 +64,7 @@ load_jobs <- function() {
   return(tibble::tibble())
 }
 
+# score jobs based on skills matching
 score_jobs <- function(jobs_df, skills) {
   if (length(skills) == 0) {
     return(jobs_df %>% mutate(score = 0, matches = 0))
@@ -93,6 +98,7 @@ score_jobs <- function(jobs_df, skills) {
     ungroup()
 }
 
+# api endpoint for job recommendations
 #* @param body The JSON body containing { skills: ["skill1","skill2"] }
 #* @post /recommend
 function(req, res) {

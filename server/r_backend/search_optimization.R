@@ -3,15 +3,19 @@ library(jsonlite)
 
 jobs_5k <- read.csv("server/r_backend/data/enhanced_jobs_step2.csv", stringsAsFactors = FALSE)
 
+# short description (first 150 characters)
 jobs_5k$short_description <- substr(jobs_5k$description, 1, 150)
 
+# skills count
 jobs_5k$skills_count <- sapply(jobs_5k$skills_extracted, function(x) {
   skills <- str_extract_all(x, "[a-zA-Z0-9_\\+\\#\\.]+")[[1]]
   length(unique(tolower(skills)))
 })
 
+# placeholder for match score
 jobs_5k$match_score <- NA
 
+# generate tags for filtering
 generate_tags <- function(category, skills, keywords) {
   skill_list <- str_extract_all(skills, "[a-zA-Z0-9_\\+\\#\\.]+")[[1]]
   keyword_list <- str_extract_all(keywords, "[a-zA-Z0-9_\\+\\#\\.]+")[[1]]

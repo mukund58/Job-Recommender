@@ -1,5 +1,5 @@
-
-## Rscript server/r_backend/run_api.R
+# helper script to start the plumber api
+# run with: Rscript server/r_backend/run_api.R
 library(plumber)
 
 api_path <- file.path('server', 'r_backend', 'api.R')

@@ -3,6 +3,7 @@ library(jsonlite)
 
 jobs_5k <- read.csv("server/r_backend/data/enhanced_jobs_step1.csv", stringsAsFactors = FALSE)
 
+# extract salary range
 extract_salary <- function(text) {
   pattern <- "(₹|\\$)\\s?\\d+[kK]?(–|-|to)?\\s?(₹|\\$)?\\s?\\d*[kK]?"
   match <- str_extract(text, pattern)
@@ -11,6 +12,7 @@ extract_salary <- function(text) {
 
 jobs_5k$salary_range <- sapply(jobs_5k$description, extract_salary)
 
+# normalize employment type
 normalize_employment_type <- function(text) {
   if (is.na(text)) return("Not specified")
   if (str_detect(text, regex("full[- ]?time", ignore_case = TRUE))) return("Full-time")
@@ -22,6 +24,7 @@ normalize_employment_type <- function(text) {
 
 jobs_5k$employment_type <- sapply(paste(jobs_5k$extensions, jobs_5k$description), normalize_employment_type)
 
+# convert posted time to days ago
 convert_to_days <- function(time_str) {
   if (is.na(time_str) || nchar(time_str) == 0) return(NA)
   if (str_detect(time_str, "hour")) return(0)
@@ -42,6 +45,7 @@ convert_to_days <- function(time_str) {
 
 jobs_5k$posted_days_ago <- sapply(jobs_5k$posted_at, convert_to_days)
 
+# detect remote type
 detect_remote_type <- function(text) {
   if (str_detect(text, regex("remote|work from home|wfh", ignore_case = TRUE))) return("Remote")
   if (str_detect(text, regex("hybrid", ignore_case = TRUE))) return("Hybrid")
@@ -51,6 +55,7 @@ detect_remote_type <- function(text) {
 
 jobs_5k$remote_type <- sapply(paste(jobs_5k$title, jobs_5k$description), detect_remote_type)
 
+# normalize source platform
 normalize_platform <- function(via_text) {
   if (is.na(via_text)) return("Unknown")
   if (str_detect(via_text, regex("linkedin", ignore_case = TRUE))) return("LinkedIn")
