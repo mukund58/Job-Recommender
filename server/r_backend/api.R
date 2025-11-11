@@ -6,7 +6,7 @@ library(stringr)
 library(dplyr)
 library(purrr)
 
-# cors filter for cross-origin requests
+# cors filter allow cross-origin requests
 #* @filter cors
 cors <- function(req, res) {
   res$setHeader('Access-Control-Allow-Origin', '*')
@@ -70,30 +70,13 @@ score_jobs <- function(jobs_df, skills) {
     return(jobs_df %>% mutate(score = 0, matches = 0))
   }
   skills_lower <- tolower(skills)
-  freq_path <- file.path(getwd(), "data", "word_frequency.csv")
-  if (!file.exists(freq_path)) {
-    freq_df <- tibble(word = skills_lower, weight = 1)
-  } else {
-    freq_df <- suppressMessages(read_csv(freq_path, col_types = cols(.default = col_character()))) %>%
-      mutate(frequency = as.numeric(frequency)) %>%
-      filter(!is.na(frequency)) %>%
-      mutate(weight = log1p(frequency)) %>%
-      select(word, weight)
-  }
-  weight_map <- setNames(freq_df$weight, freq_df$word)
-  get_weight <- function(skill) {
-    if (skill %in% names(weight_map)) weight_map[[skill]] else 1
-  }
   jobs_df %>%
     rowwise() %>%
     mutate(
       text = tolower(paste(title_clean, description_clean, skills_extracted, tags, sep = " ")),
       matched_skills = list(skills_lower[sapply(skills_lower, function(s) grepl(s, text, fixed = TRUE))]),
       matches = length(matched_skills),
-      weighted_score = sum(sapply(skills_lower, function(s) {
-        if (grepl(s, text, fixed = TRUE)) get_weight(s) else 0
-      })),
-      score = weighted_score / sum(sapply(skills_lower, get_weight))
+      score = matches / length(skills_lower)
     ) %>%
     ungroup()
 }
