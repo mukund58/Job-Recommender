@@ -3,6 +3,13 @@ library(jsonlite)
 library(dplyr)
 library(purrr)
 library(tibble)
+library(stringr)
+library(lubridate)
+
+# Inline if function for concise null checks
+iif <- function(condition, true_value, false_value) {
+  if (condition) true_value else false_value
+}
 
 #* @filter cors
 cors <- function(req, res) {
@@ -20,7 +27,10 @@ load_jobs <- function() {
   path <- 'data/enhanced_jobs_step3.json'
   if (file.exists(path)) {
     df <- jsonlite::fromJSON(path) %>% as_tibble()
-    if (nrow(df) > 0) return(df)
+    if (nrow(df) > 0) {
+      df <- df %>% mutate(date_time = as.POSIXct(date_time))
+      return(df)
+    }
   }
   return(tibble())
 }
@@ -53,7 +63,21 @@ function(req, res) {
   scored <- score_jobs(jobs_df, skills)
   ranked <- scored %>% arrange(desc(score)) %>% filter(score > 0) %>% head(10)
   results <- ranked %>%
-    select(title_clean, company_name, location, score, matches, matched_skills, description, tags, job_category, seniority_level, remote_type, employment_type, salary_range) %>%
+    mutate(posted_date = if_else(grepl("\\d+.*ago", posted_at), {
+      parts <- str_match(posted_at, "(\\d+)\\s+(hour|minute|day|week|month|year)s?\\s+ago")
+      if (!is.na(parts[1,1])) {
+        num <- as.numeric(parts[1,2])
+        unit <- parts[1,3]
+        unit_map <- c(hour = "hours", minute = "mins", day = "days", week = "weeks", month = "months", year = "years")
+        unit <- unit_map[unit]
+        if (is.na(unit)) unit <- "days"
+        date_time - as.difftime(num, units = unit)
+      } else {
+        NA
+      }
+    }, NA)) %>%
+    mutate(posted_date = as.character(posted_date)) %>%
+    select(title_clean, company_name, location, posted_date, score, matches, matched_skills, description, tags, job_category, seniority_level, remote_type, employment_type, salary_range) %>%
     mutate(score = round(score * 100, 1)) %>%
     pmap(function(...) as.list(list(...)))
   return(list(results = results))

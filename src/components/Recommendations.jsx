@@ -14,6 +14,28 @@ export default function Recommendations({ recLoading, recError, recommendations 
           .join(" ")
       : "";
 
+  // Calculate time ago from posted date
+  const timeAgo = (dateString) => {
+    if (!dateString) return '';
+    const postedDate = new Date(dateString);
+    const now = new Date();
+    const diffTime = now - postedDate;
+    if (diffTime < 0) return 'In the future';
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    if (diffMinutes < 1) return 'Just now';
+    if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    const diffYears = Math.floor(diffDays / 365);
+    if (diffYears > 0) return `${diffYears} year${diffYears > 1 ? 's' : ''} ago`;
+    const diffMonths = Math.round(diffDays / 30);
+    if (diffMonths > 0) return `${diffMonths} month${diffMonths > 1 ? 's' : ''} ago`;
+    const diffWeeks = Math.floor(diffDays / 7);
+    if (diffWeeks > 0) return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  };
+
   if (recLoading)
     return (
       <p className="text-blue-600 animate-pulse text-center mt-6">
@@ -61,6 +83,13 @@ export default function Recommendations({ recLoading, recError, recommendations 
                 <strong>Company:</strong> {getValue(job.company_name)} <br />
                 <strong>Location:</strong> {getValue(job.location) || "Location not specified"}
               </p>
+
+              {/* Posted Date */}
+              {job.posted_date && (
+                <p className="text-xs text-gray-500 mb-2">
+                  <strong>Posted:</strong> {timeAgo(getValue(job.posted_date))}
+                </p>
+              )}
 
               {/* Tags */}
               <div className="flex justify-center flex-wrap gap-2 mb-3">
