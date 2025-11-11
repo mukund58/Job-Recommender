@@ -28,7 +28,7 @@ library(jsonlite)library(jsonlite)
 
 
 
-# step 2: load jobs data and sample 5000# step 2: load jobs data and sample 5000
+# step 2: load jobs data and sample 5000
 
 jobs <- read_csv("data/gsearch_jobs.csv", quote = "\"", trim_ws = TRUE, show_col_types = FALSE)jobs <- read_csv("data/gsearch_jobs.csv", quote = "\"", trim_ws = TRUE, show_col_types = FALSE)
 
@@ -38,13 +38,13 @@ write_csv(jobs_5k, "data/gsearch_jobs_5k.csv")write_csv(jobs_5k, "data/gsearch_j
 
 
 
-# step 3: convert to lowercase# step 3: convert to lowercase
+# step 3: convert to lowercase
 
 jobs_5k <- jobs_5k %>% mutate(title = tolower(title), location = tolower(location), description = tolower(description))jobs_5k <- jobs_5k %>% mutate(title = tolower(title), location = tolower(location), description = tolower(description))
 
 
 
-# step 4: clean text function# step 4: clean text function
+# step 4: clean text function
 
 clean_text <- function(text) {clean_text <- function(text) {
 
@@ -66,7 +66,7 @@ clean_text <- function(text) {clean_text <- function(text) {
 
 
 
-# step 5: apply text cleaning# step 5: apply text cleaning
+# step 5: apply text cleaning
 
 jobs_5k$title_clean <- sapply(jobs_5k$title, clean_text)jobs_5k$title_clean <- sapply(jobs_5k$title, clean_text)
 
@@ -78,7 +78,7 @@ jobs_5k <- jobs_5k[!duplicated(jobs_5k$title_clean), ]jobs_5k <- jobs_5k[!duplic
 
 
 
-# step 6: tokenization and word frequency# step 6: tokenization and word frequency
+# step 6: tokenization and word frequency
 
 jobs_5k$title_tokens <- str_split(jobs_5k$title_clean, "\\s+")jobs_5k$title_tokens <- str_split(jobs_5k$title_clean, "\\s+")
 
@@ -92,7 +92,7 @@ if (ncol(word_freq_df) == 1) names(word_freq_df) <- "word" else names(word_freq_
 
 
 
-# step 7: save results# step 7: save results
+# step 7: save results
 
 jobs_5k$title_tokens <- sapply(jobs_5k$title_tokens, function(x) paste(unlist(x), collapse = " "))jobs_5k$title_tokens <- sapply(jobs_5k$title_tokens, function(x) paste(unlist(x), collapse = " "))
 

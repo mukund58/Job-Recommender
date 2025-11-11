@@ -45,6 +45,7 @@ score_jobs <- function(jobs_df, skills) {
       matched_skills = list(skills_lower[sapply(skills_lower, function(s) grepl(s, text, fixed = TRUE))]),
       matches = length(matched_skills),
       score = matches / length(skills_lower)
+      # matched(resume) / total skills from job post
     ) %>%
     ungroup()
 }
