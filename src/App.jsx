@@ -12,12 +12,13 @@ export default function App() {
   const [recommendations, setRecommendations] = useState(null);
   const [recLoading, setRecLoading] = useState(false);
   const [recError, setRecError] = useState(null);
-
+  
   // Handle resume extraction
   const handleExtract = ({ text: extractedText, found }) => {
     setError(null);
     setText(extractedText || "");
     setFoundSkills(found || []);
+    //  If skills found, automatically calls fetchRecommendations
     if (found && found.length > 0) fetchRecommendations(found);
     else setRecommendations(null);
   };
@@ -39,12 +40,12 @@ export default function App() {
       mounted = false;
     };
   }, []);
-
   async function fetchRecommendations(found) {
     setRecLoading(true);
     setRecError(null);
     setRecommendations(null);
     try {
+      // HTTP POST request to /recommend endpoint(API call)
       const res = await fetch("/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
