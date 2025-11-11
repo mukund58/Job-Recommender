@@ -46,7 +46,6 @@ word_freq_df <- as.data.frame(word_freq)
 if (ncol(word_freq_df) == 1) names(word_freq_df) <- "word" else names(word_freq_df) <- c("word", "frequency")
 
 # step 7: save results
-write.csv(word_freq_df, "data/word_frequency.csv", row.names = FALSE)
 jobs_5k$title_tokens <- sapply(jobs_5k$title_tokens, function(x) paste(unlist(x), collapse = " "))
 write.csv(jobs_5k, "data/cleaned_jobs_5k.csv", row.names = FALSE)
 write_json(jobs_5k, "data/cleaned_jobs_5k.json", pretty = TRUE)
